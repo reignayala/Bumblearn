@@ -14,7 +14,7 @@ function avatar(seed: string, from: string, to: string): string {
       <rect width="640" height="800" fill="url(#g)"/>
       <circle cx="320" cy="300" r="120" fill="rgba(255,255,255,0.22)"/>
       <text x="320" y="340" text-anchor="middle" font-family="Georgia, serif" font-size="120" fill="rgba(255,255,255,0.92)">${initial}</text>
-      <rect x="0" y="520" width="640" height="280" fill="rgba(92,74,77,0.28)"/>
+      <rect x="0" y="520" width="640" height="280" fill="rgba(11,61,58,0.35)"/>
     </svg>`,
   );
   return `data:image/svg+xml,${svg}`;
@@ -25,7 +25,7 @@ export const MOCK_EDUCATORS: DeckProfile[] = [
     id: "edu-1",
     name: "Maya Chen",
     role: "educator",
-    photoUrl: avatar("Maya Chen", "#a84852", "#c45c68"),
+    photoUrl: avatar("Maya Chen", "#1a5c57", "#2f9e8c"),
     pitch: "AP Calc that finally clicks — no intimidation, just clarity.",
     bio: "Former high-school math lead turned full-time tutor. I break tough problems into small wins and celebrate the messy middle of learning.",
     subjects: ["Calculus", "Algebra", "SAT Math"],
@@ -42,7 +42,7 @@ export const MOCK_EDUCATORS: DeckProfile[] = [
     id: "edu-2",
     name: "Jordan Blake",
     role: "educator",
-    photoUrl: avatar("Jordan Blake", "#8f2f3a", "#d9a8b0"),
+    photoUrl: avatar("Jordan Blake", "#0b3d3a", "#c5e063"),
     pitch: "Python from zero to building things you actually use.",
     bio: "Software engineer who loves mentoring beginners. Projects over slides — you'll leave each session with working code.",
     subjects: ["Python", "Web Dev", "Data Science"],
@@ -59,7 +59,7 @@ export const MOCK_EDUCATORS: DeckProfile[] = [
     id: "edu-3",
     name: "Sofia Alvarez",
     role: "educator",
-    photoUrl: avatar("Sofia Alvarez", "#b05a5a", "#e8c4a8"),
+    photoUrl: avatar("Sofia Alvarez", "#e07a5f", "#f4d35e"),
     pitch: "Conversational Spanish that sticks beyond the textbook.",
     bio: "Native speaker and certified language coach. We role-play real scenarios — cafés, interviews, travel — so fluency feels natural.",
     subjects: ["Spanish", "ESL"],
@@ -76,7 +76,7 @@ export const MOCK_EDUCATORS: DeckProfile[] = [
     id: "edu-4",
     name: "Dr. Amir Rahman",
     role: "educator",
-    photoUrl: avatar("Dr. Amir Rahman", "#5c4a4d", "#c45c68"),
+    photoUrl: avatar("Dr. Amir Rahman", "#3d5a56", "#2f9e8c"),
     pitch: "Organic chemistry demystified for pre-meds.",
     bio: "PhD chemist with a knack for mechanism storytelling. Office-hours energy, exam-day results.",
     subjects: ["Chemistry", "Biology"],
@@ -93,7 +93,7 @@ export const MOCK_EDUCATORS: DeckProfile[] = [
     id: "edu-5",
     name: "Priya Nair",
     role: "educator",
-    photoUrl: avatar("Priya Nair", "#a84852", "#e8c4a8"),
+    photoUrl: avatar("Priya Nair", "#1a5c57", "#f4d35e"),
     pitch: "Design critique that levels up your UX portfolio.",
     bio: "Product designer at a growth-stage startup. Together we'll tighten case studies, critique flows, and practice whiteboard interviews.",
     subjects: ["UX Design", "Figma", "Portfolio"],
@@ -110,7 +110,7 @@ export const MOCK_EDUCATORS: DeckProfile[] = [
     id: "edu-6",
     name: "Leo Okonkwo",
     role: "educator",
-    photoUrl: avatar("Leo Okonkwo", "#8f2f3a", "#b05a5a"),
+    photoUrl: avatar("Leo Okonkwo", "#0b3d3a", "#e07a5f"),
     pitch: "Guitar fundamentals with songs you love from day one.",
     bio: "Session guitarist and patient teacher. Chord progressions, rhythm, and ear training without the boredom.",
     subjects: ["Guitar", "Music Theory"],
@@ -130,7 +130,7 @@ export const MOCK_LEARNERS: DeckProfile[] = [
     id: "lrn-1",
     name: "Alex Rivera",
     role: "learner",
-    photoUrl: avatar("Alex Rivera", "#c45c68", "#d9a8b0"),
+    photoUrl: avatar("Alex Rivera", "#2f9e8c", "#c5e063"),
     pitch: "Need Calc II help before midterms — motivated and curious.",
     bio: "Sophomore engineering student. Looking for someone who can slow down when I get stuck on integrals.",
     subjects: ["Calculus", "Physics"],
@@ -147,7 +147,7 @@ export const MOCK_LEARNERS: DeckProfile[] = [
     id: "lrn-2",
     name: "Sam Patel",
     role: "learner",
-    photoUrl: avatar("Sam Patel", "#e8c4a8", "#b05a5a"),
+    photoUrl: avatar("Sam Patel", "#f4d35e", "#e07a5f"),
     pitch: "Career switcher diving into Python — looking for a patient guide.",
     bio: "Marketing background, learning to code. Prefer project-based sessions over lectures.",
     subjects: ["Python", "Web Dev"],
