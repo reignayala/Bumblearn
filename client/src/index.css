@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #0b3d3a;
+  --color-ink-soft: #1a5c57;
+  --color-mist: #e8f5f1;
+  --color-foam: #f4fbf8;
+  --color-leaf: #2f9e8c;
+  --color-spark: #f4d35e;
+  --color-lime: #c5e063;
+  --color-coral: #e07a5f;
+  --color-slate: #3d5a56;
+  --color-muted: #6b8f8a;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background:
+      radial-gradient(ellipse 80% 50% at 10% -10%, rgba(197, 224, 99, 0.35), transparent 55%),
+      radial-gradient(ellipse 70% 45% at 100% 0%, rgba(244, 211, 94, 0.28), transparent 50%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(47, 158, 140, 0.18), transparent 55%),
+      linear-gradient(165deg, var(--color-foam) 0%, var(--color-mist) 45%, #dceee8 100%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
