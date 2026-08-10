@@ -26,7 +26,7 @@ export function SwipeCard({
   const overlayTint = useTransform(
     x,
     [-180, 0, 180],
-    ["rgba(224,122,95,0.25)", "rgba(0,0,0,0)", "rgba(47,158,140,0.28)"],
+    ["rgba(196,75,106,0.28)", "rgba(0,0,0,0)", "rgba(232,67,122,0.3)"],
   );
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
@@ -72,7 +72,7 @@ export function SwipeCard({
         onClick={() => {
           if (Math.abs(x.get()) < 8) onOpen();
         }}
-        className="relative h-full w-full overflow-hidden rounded-[1.75rem] text-left shadow-[0_20px_50px_-24px_rgba(11,61,58,0.55)] ring-1 ring-ink/10"
+        className="relative h-full w-full overflow-hidden rounded-[1.75rem] text-left shadow-[0_20px_50px_-24px_rgba(193,18,31,0.45)] ring-1 ring-ink/10"
         aria-label={`View ${profile.name}'s profile`}
       >
         <img
