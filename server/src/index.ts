@@ -5,6 +5,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { createAuthRouter } from "./auth/routes.js";
 import { createChatRouter } from "./chat/routes.js";
+import { ensureSeedEducators } from "./chat/store.js";
 import { registerChatSockets } from "./chat/socket.js";
 
 const PORT = Number(process.env.PORT ?? 4000);
@@ -35,8 +36,8 @@ app.get("/health", (_req, res) => {
 app.get("/api", (_req, res) => {
   res.json({
     name: "Bumblearn API",
-    version: "0.3.0",
-    status: "auth-chat-enabled",
+    version: "0.4.0",
+    status: "postgres-persisted",
   });
 });
 
@@ -44,6 +45,14 @@ app.use("/api", createAuthRouter());
 app.use("/api", createChatRouter());
 registerChatSockets(io);
 
-httpServer.listen(PORT, () => {
-  console.log(`Bumblearn API listening on http://localhost:${PORT}`);
+async function boot() {
+  await ensureSeedEducators();
+  httpServer.listen(PORT, () => {
+    console.log(`Bumblearn API listening on http://localhost:${PORT}`);
+  });
+}
+
+boot().catch((err) => {
+  console.error("Failed to start API", err);
+  process.exit(1);
 });

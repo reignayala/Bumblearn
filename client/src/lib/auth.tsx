@@ -19,6 +19,7 @@ import {
   type AuthUser,
   type RoleChoice,
 } from "./api";
+import { resetSocket } from "./socket";
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -76,12 +77,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async signup(input) {
         const result = await apiSignup(input);
         setToken(result.token);
+        resetSocket();
         setUser(result.user);
         return result.user;
       },
       async login(input) {
         const result = await apiLogin(input);
         setToken(result.token);
+        resetSocket();
         setUser(result.user);
         return result.user;
       },
@@ -92,6 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // ignore network errors on logout
         }
         setToken(null);
+        resetSocket();
         setUser(null);
       },
       async finishOnboarding(payload) {

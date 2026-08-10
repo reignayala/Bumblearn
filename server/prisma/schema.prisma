@@ -41,21 +41,22 @@ enum SessionStatus {
 }
 
 model User {
-  id              String    @id @default(cuid())
-  name            String
-  email           String    @unique
-  passwordHash    String?   @map("password_hash")
-  googleId        String?   @unique @map("google_id")
-  roles           UserRole[]
-  bio             String?
-  profilePhotoUrl String?   @map("profile_photo_url")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  id                 String    @id @default(cuid())
+  name               String
+  email              String    @unique
+  passwordHash       String?   @map("password_hash")
+  googleId           String?   @unique @map("google_id")
+  roles              UserRole[]
+  bio                String?
+  profilePhotoUrl    String?   @map("profile_photo_url")
+  onboardingComplete Boolean   @default(false) @map("onboarding_complete")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
 
   educatorProfile EducatorProfile?
   learnerProfile  LearnerProfile?
 
-  swipesMade   Swipe[]   @relation("SwipesMade")
+  swipesMade     Swipe[] @relation("SwipesMade")
   swipesReceived Swipe[] @relation("SwipesReceived")
 
   matchesAsA Match[] @relation("MatchUserA")

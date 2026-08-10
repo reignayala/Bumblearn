@@ -10,6 +10,8 @@ import {
   type RoleChoice,
 } from "./store.js";
 
+export type AuthedRequest = Request & { userId?: string; token?: string };
+
 function getToken(req: Request) {
   const header = req.headers.authorization;
   if (header?.startsWith("Bearer ")) return header.slice(7);
@@ -17,19 +19,19 @@ function getToken(req: Request) {
   return bodyToken;
 }
 
-function requireAuth(req: Request, res: Response, next: NextFunction) {
+export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   const token = getToken(req);
   if (!token) {
     res.status(401).json({ error: "Sign in required" });
     return;
   }
-  const user = findUserByToken(token);
+  const user = await findUserByToken(token);
   if (!user) {
     res.status(401).json({ error: "Session expired. Please sign in again." });
     return;
   }
-  (req as Request & { userId?: string; token?: string }).userId = user.id;
-  (req as Request & { userId?: string; token?: string }).token = token;
+  (req as AuthedRequest).userId = user.id;
+  (req as AuthedRequest).token = token;
   next();
 }
 
@@ -76,25 +78,25 @@ export function createAuthRouter() {
   });
 
   router.post("/auth/logout", requireAuth, (req, res) => {
-    const token = (req as Request & { token?: string }).token;
+    const token = (req as AuthedRequest).token;
     if (token) logout(token);
     res.json({ ok: true });
   });
 
-  router.get("/auth/me", requireAuth, (req, res) => {
-    const userId = (req as Request & { userId?: string }).userId!;
-    const user = findUserByToken(getToken(req)!);
-    if (!user || user.id !== userId) {
+  router.get("/auth/me", requireAuth, async (req, res) => {
+    const token = getToken(req);
+    const user = token ? await findUserByToken(token) : null;
+    if (!user) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
     res.json({ user: publicUser(user) });
   });
 
-  router.post("/auth/onboarding", requireAuth, (req, res) => {
+  router.post("/auth/onboarding", requireAuth, async (req, res) => {
     try {
-      const userId = (req as Request & { userId?: string }).userId!;
-      const user = completeOnboarding(userId, {
+      const userId = (req as AuthedRequest).userId!;
+      const user = await completeOnboarding(userId, {
         bio: req.body?.bio,
         educator: req.body?.educator,
         learner: req.body?.learner,
@@ -107,14 +109,14 @@ export function createAuthRouter() {
     }
   });
 
-  router.post("/auth/roles", requireAuth, (req, res) => {
+  router.post("/auth/roles", requireAuth, async (req, res) => {
     try {
-      const userId = (req as Request & { userId?: string }).userId!;
+      const userId = (req as AuthedRequest).userId!;
       if (!isRoleChoice(req.body?.roleChoice)) {
         res.status(400).json({ error: "Choose learner, educator, or both" });
         return;
       }
-      const user = updateRoles(userId, req.body.roleChoice);
+      const user = await updateRoles(userId, req.body.roleChoice);
       res.json({ user });
     } catch (err) {
       res.status(400).json({

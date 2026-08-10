@@ -1,18 +1,31 @@
 import { io, type Socket } from "socket.io-client";
-import type { ApiMessage, DemoIdentity } from "./api";
+import { getToken, type ApiMessage, type DemoIdentity } from "./api";
 
 let socket: Socket | null = null;
 
 export function getSocket() {
+  const token = getToken();
   if (!socket) {
     socket = io("/", {
       path: "/socket.io",
       autoConnect: true,
       transports: ["websocket", "polling"],
+      auth: { token },
     });
+  } else {
+    socket.auth = { token };
+    if (!socket.connected) socket.connect();
   }
   return socket;
 }
+
+export function resetSocket() {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+}
+
 
 export type MatchUpdatedEvent = {
   matchId: string;
