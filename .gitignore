@@ -11,3 +11,5 @@ coverage
 .vite
 *.tsbuildinfo
 .prisma
+Bumblearn
+*.webp
