@@ -200,7 +200,7 @@ export async function completeOnboarding(
 
   if (isEducator) {
     if (!payload.educator?.subjects?.length) {
-      throw new Error("Add at least one subject you teach");
+      throw new Error("Add at least one course you teach");
     }
     await prisma.educatorProfile.upsert({
       where: { userId },
@@ -236,7 +236,7 @@ export async function completeOnboarding(
 
   if (isLearner) {
     if (!payload.learner?.subjectsWanted?.length) {
-      throw new Error("Add at least one subject you want to learn");
+      throw new Error("Add at least one course you want help with");
     }
     const skill =
       payload.learner.skillLevel === "advanced"

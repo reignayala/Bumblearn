@@ -1,17 +1,20 @@
 import { Filter, X } from "lucide-react";
 import { useState } from "react";
+import { COURSE_OPTIONS } from "../data/courses";
 import type { DeckFilters } from "../types";
 
-const SUBJECTS = [
-  "all",
-  "Calculus",
-  "Python",
-  "Spanish",
-  "Chemistry",
-  "UX Design",
-  "Guitar",
-  "Algebra",
-  "Web Dev",
+const SUBJECTS = ["all", ...COURSE_OPTIONS];
+
+/** Keep the top chip row short; full list lives in the Filters panel. */
+const QUICK_SUBJECTS = [
+  "BS Accountancy",
+  "BS Computer Science",
+  "BS Information Technology",
+  "BS Nursing",
+  "BS Civil Engineering",
+  "Doctor of Medicine",
+  "BA Communication",
+  "Psychology",
 ];
 
 interface FilterBarProps {
@@ -46,7 +49,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
           )}
         </button>
 
-        {SUBJECTS.filter((s) => s !== "all").map((subject) => {
+        {QUICK_SUBJECTS.map((subject) => {
           const active = filters.subject === subject;
           return (
             <button
@@ -86,7 +89,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
           </div>
 
           <label className="mb-3 block text-sm">
-            <span className="mb-1 block font-medium text-slate">Subject</span>
+            <span className="mb-1 block font-medium text-slate">Course / program</span>
             <select
               value={filters.subject}
               onChange={(e) => onChange({ ...filters, subject: e.target.value })}
@@ -94,7 +97,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
             >
               {SUBJECTS.map((s) => (
                 <option key={s} value={s}>
-                  {s === "all" ? "All subjects" : s}
+                  {s === "all" ? "All courses" : s}
                 </option>
               ))}
             </select>
