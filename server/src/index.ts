@@ -3,6 +3,8 @@ import cors from "cors";
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { createChatRouter } from "./chat/routes.js";
+import { registerChatSockets } from "./chat/socket.js";
 
 const PORT = Number(process.env.PORT ?? 4000);
 const CLIENT_URL = process.env.CLIENT_URL ?? "http://localhost:5173";
@@ -29,24 +31,16 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "bumblearn-api" });
 });
 
-// Placeholder — auth, swipe, match, and chat routes land in later milestones.
 app.get("/api", (_req, res) => {
   res.json({
     name: "Bumblearn API",
-    version: "0.1.0",
-    status: "scaffolded",
+    version: "0.2.0",
+    status: "chat-enabled",
   });
 });
 
-io.on("connection", (socket) => {
-  socket.on("join_match", (matchId: string) => {
-    socket.join(`match:${matchId}`);
-  });
-
-  socket.on("leave_match", (matchId: string) => {
-    socket.leave(`match:${matchId}`);
-  });
-});
+app.use("/api", createChatRouter());
+registerChatSockets(io);
 
 httpServer.listen(PORT, () => {
   console.log(`Bumblearn API listening on http://localhost:${PORT}`);

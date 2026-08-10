@@ -1,7 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { GraduationCap, RotateCcw, Sparkles, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { MOCK_DECK } from "../data/mockProfiles";
+import { createMatch } from "../lib/api";
 import { DEFAULT_FILTERS, type DeckFilters, type DeckProfile, type SwipeDirection } from "../types";
 import { FilterBar } from "./FilterBar";
 import { MatchCelebration } from "./MatchCelebration";
@@ -38,6 +40,7 @@ function mockIsMutualMatch(profile: DeckProfile): boolean {
 }
 
 export function SwipeDeck() {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<DeckFilters>(DEFAULT_FILTERS);
   const [deckIds, setDeckIds] = useState(() => MOCK_DECK.map((p) => p.id));
   const [history, setHistory] = useState<
@@ -45,6 +48,7 @@ export function SwipeDeck() {
   >([]);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [matchProfile, setMatchProfile] = useState<DeckProfile | null>(null);
+  const [matchId, setMatchId] = useState<string | null>(null);
   const [exitHint, setExitHint] = useState<"like" | "pass" | null>(null);
 
   const filtered = useMemo(() => applyFilters(MOCK_DECK, filters), [filters]);
@@ -62,6 +66,14 @@ export function SwipeDeck() {
     setDetailId(null);
     setExitHint(null);
     if (matched) {
+      void createMatch({
+        peerId: profile.id,
+        peerName: profile.name,
+        peerRole: profile.role,
+        subjects: profile.subjects,
+      })
+        .then(({ match }) => setMatchId(match.id))
+        .catch(() => setMatchId(`m_${profile.id}`));
       setTimeout(() => setMatchProfile(profile), 280);
     }
   };
@@ -214,8 +226,16 @@ export function SwipeDeck() {
 
       <MatchCelebration
         profile={matchProfile}
-        onClose={() => setMatchProfile(null)}
-        onChat={() => setMatchProfile(null)}
+        onClose={() => {
+          setMatchProfile(null);
+          setMatchId(null);
+        }}
+        onChat={() => {
+          const id = matchId ?? (matchProfile ? `m_${matchProfile.id}` : null);
+          setMatchProfile(null);
+          setMatchId(null);
+          if (id) navigate(`/matches/${id}`);
+        }}
       />
     </div>
   );
