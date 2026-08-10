@@ -33,10 +33,9 @@ function applyFilters(profiles: DeckProfile[], filters: DeckFilters): DeckProfil
   });
 }
 
-/** Mock mutual-match chance so the celebration UI is easy to demo. */
-function mockIsMutualMatch(profile: DeckProfile): boolean {
-  const hash = profile.id.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return hash % 2 === 0;
+/** Mock mutual interest — every Interested swipe unlocks chat in v1. */
+function mockIsMutualMatch(_profile: DeckProfile): boolean {
+  return true;
 }
 
 export function SwipeDeck({ deck: sourceDeck = MOCK_DECK }: { deck?: DeckProfile[] }) {
@@ -49,6 +48,8 @@ export function SwipeDeck({ deck: sourceDeck = MOCK_DECK }: { deck?: DeckProfile
   const [detailId, setDetailId] = useState<string | null>(null);
   const [matchProfile, setMatchProfile] = useState<DeckProfile | null>(null);
   const [matchId, setMatchId] = useState<string | null>(null);
+  const [matchReady, setMatchReady] = useState(false);
+  const [matchError, setMatchError] = useState<string | null>(null);
   const [exitHint, setExitHint] = useState<"like" | "pass" | null>(null);
 
   useEffect(() => {
@@ -56,6 +57,8 @@ export function SwipeDeck({ deck: sourceDeck = MOCK_DECK }: { deck?: DeckProfile
     setHistory([]);
     setMatchProfile(null);
     setMatchId(null);
+    setMatchReady(false);
+    setMatchError(null);
     setDetailId(null);
   }, [sourceDeck]);
 
@@ -76,15 +79,24 @@ export function SwipeDeck({ deck: sourceDeck = MOCK_DECK }: { deck?: DeckProfile
     setDetailId(null);
     setExitHint(null);
     if (matched) {
+      setMatchReady(false);
+      setMatchError(null);
+      setMatchId(null);
+      setMatchProfile(profile);
       void createMatch({
         peerId: profile.id,
         peerName: profile.name,
         peerRole: profile.role,
         subjects: profile.subjects,
       })
-        .then(({ match }) => setMatchId(match.id))
-        .catch(() => setMatchId(`m_${profile.id}`));
-      setTimeout(() => setMatchProfile(profile), 280);
+        .then(({ match }) => {
+          setMatchId(match.id);
+          setMatchReady(true);
+        })
+        .catch((err: Error) => {
+          setMatchError(err.message || "Could not save this match. Try again.");
+          setMatchReady(false);
+        });
     }
   };
 
@@ -236,15 +248,22 @@ export function SwipeDeck({ deck: sourceDeck = MOCK_DECK }: { deck?: DeckProfile
 
       <MatchCelebration
         profile={matchProfile}
+        matchReady={matchReady}
+        matchError={matchError}
         onClose={() => {
           setMatchProfile(null);
           setMatchId(null);
+          setMatchReady(false);
+          setMatchError(null);
         }}
         onChat={() => {
-          const id = matchId ?? (matchProfile ? `m_${matchProfile.id}` : null);
+          if (!matchId || !matchReady) return;
+          const id = matchId;
           setMatchProfile(null);
           setMatchId(null);
-          if (id) navigate(`/matches/${id}`);
+          setMatchReady(false);
+          setMatchError(null);
+          navigate(`/matches/${id}`);
         }}
       />
     </div>

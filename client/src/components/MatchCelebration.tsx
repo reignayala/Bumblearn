@@ -4,11 +4,19 @@ import type { DeckProfile } from "../types";
 
 interface MatchCelebrationProps {
   profile: DeckProfile | null;
+  matchReady: boolean;
+  matchError: string | null;
   onClose: () => void;
   onChat: () => void;
 }
 
-export function MatchCelebration({ profile, onClose, onChat }: MatchCelebrationProps) {
+export function MatchCelebration({
+  profile,
+  matchReady,
+  matchError,
+  onClose,
+  onChat,
+}: MatchCelebrationProps) {
   return (
     <AnimatePresence>
       {profile && (
@@ -72,14 +80,19 @@ export function MatchCelebration({ profile, onClose, onChat }: MatchCelebrationP
               </div>
             </div>
 
+            {matchError && (
+              <p className="mt-4 text-center text-sm text-coral">{matchError}</p>
+            )}
+
             <div className="mt-6 grid gap-2">
               <button
                 type="button"
                 onClick={onChat}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-ink px-4 py-3.5 text-sm font-semibold text-foam transition hover:bg-ink-soft"
+                disabled={!matchReady || Boolean(matchError)}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-ink px-4 py-3.5 text-sm font-semibold text-foam transition hover:bg-ink-soft disabled:opacity-50"
               >
                 <MessageCircle className="h-4 w-4" />
-                Open chat
+                {matchReady ? "Open chat" : "Saving match…"}
               </button>
               <button
                 type="button"
