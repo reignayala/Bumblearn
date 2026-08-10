@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AppShell } from "./layouts/AppShell";
+import { isDemoMode } from "./lib/demo";
 import { useAuth } from "./lib/auth";
 import { ChatPage } from "./pages/ChatPage";
 import { DiscoverPage } from "./pages/DiscoverPage";
@@ -43,8 +44,10 @@ function BootScreen() {
 }
 
 export default function App() {
+  const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, "") || undefined;
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={routerBasename}>
       <Routes>
         <Route element={<PublicOnly />}>
           <Route path="welcome" element={<WelcomePage />} />
@@ -65,7 +68,7 @@ export default function App() {
           </Route>
         </Route>
 
-        <Route path="*" element={<Navigate to="/welcome" replace />} />
+        <Route path="*" element={<Navigate to={isDemoMode ? "/" : "/welcome"} replace />} />
       </Routes>
     </BrowserRouter>
   );
