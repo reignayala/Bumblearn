@@ -1,7 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { GraduationCap, RotateCcw, Sparkles, ThumbsDown, ThumbsUp } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { MOCK_DECK } from "../data/mockProfiles";
+import { createMatch } from "../lib/api";
 import { DEFAULT_FILTERS, type DeckFilters, type DeckProfile, type SwipeDirection } from "../types";
 import { FilterBar } from "./FilterBar";
 import { MatchCelebration } from "./MatchCelebration";
@@ -31,29 +33,44 @@ function applyFilters(profiles: DeckProfile[], filters: DeckFilters): DeckProfil
   });
 }
 
-/** Mock mutual-match chance so the celebration UI is easy to demo. */
-function mockIsMutualMatch(profile: DeckProfile): boolean {
-  const hash = profile.id.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return hash % 2 === 0;
+/** Mock mutual interest — every Interested swipe unlocks chat in v1. */
+function mockIsMutualMatch(_profile: DeckProfile): boolean {
+  return true;
 }
 
-export function SwipeDeck() {
+export function SwipeDeck({ deck: sourceDeck = MOCK_DECK }: { deck?: DeckProfile[] }) {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<DeckFilters>(DEFAULT_FILTERS);
-  const [deckIds, setDeckIds] = useState(() => MOCK_DECK.map((p) => p.id));
+  const [deckIds, setDeckIds] = useState(() => sourceDeck.map((p) => p.id));
   const [history, setHistory] = useState<
     { id: string; direction: SwipeDirection; matched: boolean }[]
   >([]);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [matchProfile, setMatchProfile] = useState<DeckProfile | null>(null);
+  const [matchId, setMatchId] = useState<string | null>(null);
+  const [matchReady, setMatchReady] = useState(false);
+  const [matchError, setMatchError] = useState<string | null>(null);
   const [exitHint, setExitHint] = useState<"like" | "pass" | null>(null);
 
-  const filtered = useMemo(() => applyFilters(MOCK_DECK, filters), [filters]);
+  useEffect(() => {
+    setDeckIds(sourceDeck.map((p) => p.id));
+    setHistory([]);
+    setMatchProfile(null);
+    setMatchId(null);
+    setMatchReady(false);
+    setMatchError(null);
+    setDetailId(null);
+  }, [sourceDeck]);
+
+  const filtered = useMemo(() => applyFilters(sourceDeck, filters), [filters, sourceDeck]);
   const deck = useMemo(
     () => filtered.filter((p) => deckIds.includes(p.id)),
     [filtered, deckIds],
   );
   const visible = deck.slice(0, 3);
-  const detailProfile = detailId ? (MOCK_DECK.find((p) => p.id === detailId) ?? null) : null;
+  const detailProfile = detailId
+    ? (sourceDeck.find((p) => p.id === detailId) ?? null)
+    : null;
 
   const commitSwipe = (profile: DeckProfile, direction: SwipeDirection) => {
     const matched = direction === "like" && mockIsMutualMatch(profile);
@@ -62,7 +79,24 @@ export function SwipeDeck() {
     setDetailId(null);
     setExitHint(null);
     if (matched) {
-      setTimeout(() => setMatchProfile(profile), 280);
+      setMatchReady(false);
+      setMatchError(null);
+      setMatchId(null);
+      setMatchProfile(profile);
+      void createMatch({
+        peerId: profile.id,
+        peerName: profile.name,
+        peerRole: profile.role,
+        subjects: profile.subjects,
+      })
+        .then(({ match }) => {
+          setMatchId(match.id);
+          setMatchReady(true);
+        })
+        .catch((err: Error) => {
+          setMatchError(err.message || "Could not save this match. Try again.");
+          setMatchReady(false);
+        });
     }
   };
 
@@ -83,7 +117,7 @@ export function SwipeDeck() {
   };
 
   const resetDeck = () => {
-    setDeckIds(MOCK_DECK.map((p) => p.id));
+    setDeckIds(sourceDeck.map((p) => p.id));
     setHistory([]);
     setMatchProfile(null);
     setDetailId(null);
@@ -95,8 +129,8 @@ export function SwipeDeck() {
         <FilterBar filters={filters} onChange={setFilters} />
       </div>
 
-      <div className="relative min-h-[22rem] flex-1">
-        <div className="absolute inset-0 mx-auto max-w-md">
+      <div className="relative z-0 min-h-[22rem] flex-1">
+        <div className="absolute inset-0 mx-auto max-w-md overflow-hidden">
           <AnimatePresence mode="popLayout">
             {visible.length === 0 ? (
               <motion.div
@@ -214,8 +248,23 @@ export function SwipeDeck() {
 
       <MatchCelebration
         profile={matchProfile}
-        onClose={() => setMatchProfile(null)}
-        onChat={() => setMatchProfile(null)}
+        matchReady={matchReady}
+        matchError={matchError}
+        onClose={() => {
+          setMatchProfile(null);
+          setMatchId(null);
+          setMatchReady(false);
+          setMatchError(null);
+        }}
+        onChat={() => {
+          if (!matchId || !matchReady) return;
+          const id = matchId;
+          setMatchProfile(null);
+          setMatchId(null);
+          setMatchReady(false);
+          setMatchError(null);
+          navigate(`/matches/${id}`);
+        }}
       />
     </div>
   );

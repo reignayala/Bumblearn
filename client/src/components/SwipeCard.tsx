@@ -50,7 +50,7 @@ export function SwipeCard({
       style={{
         x: isTop ? x : 0,
         rotate: isTop ? rotate : 0,
-        zIndex: 20 - stackIndex,
+        zIndex: 10 - stackIndex,
         scale,
         y: yOffset,
       }}
@@ -134,7 +134,7 @@ export function SwipeCard({
           <p className="text-sm leading-snug text-white/90 line-clamp-2">{profile.pitch}</p>
 
           <div className="flex flex-wrap gap-1.5">
-            {profile.subjects.slice(0, 4).map((subject) => (
+            {profile.subjects.slice(0, 3).map((subject) => (
               <span
                 key={subject}
                 className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-medium backdrop-blur-sm"
