@@ -22,7 +22,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
     <div className="relative z-40 space-y-2">
       <ProgramPicker
         label="Program"
-        placeholder="Choose the program you need"
+        placeholder="Programs"
         value={filters.subject === "all" ? null : filters.subject}
         onChange={(course) =>
           onChange({

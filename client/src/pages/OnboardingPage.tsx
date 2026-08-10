@@ -176,7 +176,7 @@ export function OnboardingPage() {
           <div className="space-y-4">
             <ProgramPicker
               label="Program you need"
-              placeholder="Choose the program you need"
+              placeholder="Programs"
               value={lrnProgram}
               onChange={setLrnProgram}
               allowClear={false}
