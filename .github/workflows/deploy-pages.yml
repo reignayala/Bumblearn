@@ -3,19 +3,19 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "index.html"
+      - "404.html"
+      - "assets/**"
+      - ".nojekyll"
+      - "favicon.svg"
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
+  contents: write
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,21 +35,20 @@ jobs:
         env:
           VITE_GITHUB_PAGES: "true"
 
-      - name: SPA fallback for client routes
-        run: cp client/dist/index.html client/dist/404.html
+      - name: Publish build to repo root for Pages
+        run: |
+          rm -rf assets
+          cp client/dist/index.html index.html
+          cp client/dist/index.html 404.html
+          cp -r client/dist/assets assets
+          cp client/dist/favicon.svg favicon.svg
+          cp client/public/.nojekyll .nojekyll
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: client/dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Commit and push static site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html 404.html assets .nojekyll favicon.svg
+          git diff --staged --quiet && echo "No changes" && exit 0
+          git commit -m "Deploy GitHub Pages [skip ci]"
+          git push
