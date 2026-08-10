@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { BrandMark } from "../components/BrandMark";
-import { COURSE_OPTIONS } from "../data/courses";
+import { ProgramPicker } from "../components/ProgramPicker";
 import { useAuth } from "../lib/auth";
 import type { AuthUser } from "../lib/api";
 
@@ -40,7 +40,7 @@ export function OnboardingPage() {
   const [eduAvailability, setEduAvailability] = useState("Weeknights & weekends");
   const [eduPitch, setEduPitch] = useState("");
 
-  const [lrnSubjects, setLrnSubjects] = useState<string[]>([]);
+  const [lrnProgram, setLrnProgram] = useState<string | null>(null);
   const [lrnLevel, setLrnLevel] =
     useState<"beginner" | "intermediate" | "advanced">("beginner");
   const [lrnGoals, setLrnGoals] = useState("");
@@ -78,7 +78,7 @@ export function OnboardingPage() {
         : null;
       const learner: AuthUser["learner"] = needsLearner
         ? {
-            subjectsWanted: lrnSubjects,
+            subjectsWanted: lrnProgram ? [lrnProgram] : [],
             skillLevel: lrnLevel,
             learningGoals: lrnGoals,
             budgetMin: Number(lrnBudgetMin) || 0,
@@ -140,12 +140,12 @@ export function OnboardingPage() {
 
         {step === "educator" && (
           <div className="space-y-4">
-            <ChipPicker
-              label="Courses you teach"
-              options={COURSE_OPTIONS}
+            <ProgramPicker
+              mode="multi"
+              label="Programs you teach"
+              placeholder="Choose programs you teach"
               value={eduSubjects}
               onChange={setEduSubjects}
-              searchable
             />
             <div className="grid grid-cols-2 gap-3">
               <NumberField label="$ / hour" value={eduRate} onChange={setEduRate} />
@@ -174,12 +174,12 @@ export function OnboardingPage() {
 
         {step === "learner" && (
           <div className="space-y-4">
-            <ChipPicker
-              label="Courses you want help with"
-              options={COURSE_OPTIONS}
-              value={lrnSubjects}
-              onChange={setLrnSubjects}
-              searchable
+            <ProgramPicker
+              label="Program you need"
+              placeholder="Choose the program you need"
+              value={lrnProgram}
+              onChange={setLrnProgram}
+              allowClear={false}
             />
             <label className="block text-sm">
               <span className="mb-1 block font-medium text-slate">Skill level</span>
@@ -271,38 +271,17 @@ function ChipPicker({
   options,
   value,
   onChange,
-  searchable = false,
 }: {
   label: string;
   options: string[];
   value: string[];
   onChange: (next: string[]) => void;
-  searchable?: boolean;
 }) {
-  const [query, setQuery] = useState("");
-  const visible = searchable
-    ? options.filter((option) =>
-        option.toLowerCase().includes(query.trim().toLowerCase()),
-      )
-    : options;
-
   return (
     <div>
       <p className="mb-2 text-sm font-medium text-slate">{label}</p>
-      {searchable && (
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search courses…"
-          className="mb-2 w-full rounded-2xl border border-ink/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-leaf/40"
-        />
-      )}
-      {value.length > 0 && (
-        <p className="mb-2 text-xs text-muted">{value.length} selected</p>
-      )}
-      <div className="flex max-h-48 flex-wrap gap-2 overflow-y-auto rounded-2xl bg-white/50 p-2 ring-1 ring-ink/8">
-        {visible.map((option) => {
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => {
           const active = value.includes(option);
           return (
             <button
@@ -314,7 +293,7 @@ function ChipPicker({
                 )
               }
               className={[
-                "rounded-full px-3 py-1.5 text-left text-xs font-medium transition sm:text-sm",
+                "rounded-full px-3 py-1.5 text-sm font-medium transition",
                 active
                   ? "bg-leaf text-white"
                   : "bg-white text-slate ring-1 ring-ink/10 hover:bg-mist",
@@ -324,9 +303,6 @@ function ChipPicker({
             </button>
           );
         })}
-        {visible.length === 0 && (
-          <p className="px-2 py-3 text-sm text-muted">No courses match that search.</p>
-        )}
       </div>
     </div>
   );
