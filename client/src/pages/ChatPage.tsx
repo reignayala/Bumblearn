@@ -15,6 +15,7 @@ import {
   type ApiMessage,
   type DemoIdentity,
 } from "../lib/api";
+import { isDemoMode } from "../lib/demo";
 import { getSocket, onChatMessage, sendChatMessage } from "../lib/socket";
 
 function formatTime(iso: string) {
@@ -86,8 +87,9 @@ export function ChatPage() {
   }, [matchId]);
 
   useEffect(() => {
-    if (status !== "ready" || !matchId) return;
+    if (status !== "ready" || !matchId || isDemoMode) return;
     const socket = getSocket();
+    if (!socket) return;
     socket.emit("join_match", matchId);
 
     const unsubscribe = onChatMessage((message) => {
@@ -124,6 +126,13 @@ export function ChatPage() {
         setMessages((prev) => [...prev, message]);
       }
       setDraft("");
+      if (isDemoMode && match) {
+        window.setTimeout(async () => {
+          const thread = await fetchMatchThread(matchId);
+          setMessages(thread.messages);
+          thread.messages.forEach((m) => seenIds.current.add(m.id));
+        }, 1000);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not send message");
     } finally {

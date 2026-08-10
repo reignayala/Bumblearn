@@ -19,6 +19,7 @@ import {
   type AuthUser,
   type RoleChoice,
 } from "./api";
+import { DEMO_USER, isDemoMode } from "./demo";
 import { resetSocket } from "./socket";
 
 type AuthContextValue = {
@@ -48,6 +49,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
+    if (isDemoMode) {
+      setUser(DEMO_USER);
+      setLoading(false);
+      return;
+    }
     const token = getToken();
     if (!token) {
       setUser(null);
