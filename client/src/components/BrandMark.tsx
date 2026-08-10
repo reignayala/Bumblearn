@@ -19,7 +19,7 @@ export function BrandMark({ size = "md", showWordmark = true }: BrandMarkProps) 
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden
       >
-        <rect width="64" height="64" rx="16" fill="#6B1742" />
+        <rect width="64" height="64" rx="16" fill="#C1121F" />
         <path
           d="M32 14c-1.2 4.8-4.8 8.4-9.6 9.6 4.8 1.2 8.4 4.8 9.6 9.6 1.2-4.8 4.8-8.4 9.6-9.6C36.8 22.4 33.2 18.8 32 14z"
           fill="#FFC4D6"

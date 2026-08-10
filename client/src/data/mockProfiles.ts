@@ -14,7 +14,7 @@ function avatar(seed: string, from: string, to: string): string {
       <rect width="640" height="800" fill="url(#g)"/>
       <circle cx="320" cy="300" r="120" fill="rgba(255,255,255,0.22)"/>
       <text x="320" y="340" text-anchor="middle" font-family="Georgia, serif" font-size="120" fill="rgba(255,255,255,0.92)">${initial}</text>
-      <rect x="0" y="520" width="640" height="280" fill="rgba(107,23,66,0.35)"/>
+      <rect x="0" y="520" width="640" height="280" fill="rgba(193,18,31,0.35)"/>
     </svg>`,
   );
   return `data:image/svg+xml,${svg}`;
@@ -42,7 +42,7 @@ export const MOCK_EDUCATORS: DeckProfile[] = [
     id: "edu-2",
     name: "Jordan Blake",
     role: "educator",
-    photoUrl: avatar("Jordan Blake", "#6b1742", "#ff9ec0"),
+    photoUrl: avatar("Jordan Blake", "#c1121f", "#ff9ec0"),
     pitch: "Python from zero to building things you actually use.",
     bio: "Software engineer who loves mentoring beginners. Projects over slides — you'll leave each session with working code.",
     subjects: ["Python", "Web Dev", "Data Science"],
@@ -110,7 +110,7 @@ export const MOCK_EDUCATORS: DeckProfile[] = [
     id: "edu-6",
     name: "Leo Okonkwo",
     role: "educator",
-    photoUrl: avatar("Leo Okonkwo", "#6b1742", "#c44b6a"),
+    photoUrl: avatar("Leo Okonkwo", "#c1121f", "#c44b6a"),
     pitch: "Guitar fundamentals with songs you love from day one.",
     bio: "Session guitarist and patient teacher. Chord progressions, rhythm, and ear training without the boredom.",
     subjects: ["Guitar", "Music Theory"],
