@@ -157,8 +157,8 @@ export function SwipeDeck() {
                 style={{
                   background:
                     exitHint === "like"
-                      ? "rgba(47,158,140,0.2)"
-                      : "rgba(224,122,95,0.2)",
+                      ? "rgba(232,67,122,0.22)"
+                      : "rgba(196,75,106,0.22)",
                 }}
               />
             )}

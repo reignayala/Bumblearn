@@ -4,16 +4,16 @@
   --font-display: "Fraunces", Georgia, serif;
   --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #0b3d3a;
-  --color-ink-soft: #1a5c57;
-  --color-mist: #e8f5f1;
-  --color-foam: #f4fbf8;
-  --color-leaf: #2f9e8c;
-  --color-spark: #f4d35e;
-  --color-lime: #c5e063;
-  --color-coral: #e07a5f;
-  --color-slate: #3d5a56;
-  --color-muted: #6b8f8a;
+  --color-ink: #6b1742;
+  --color-ink-soft: #9a2a5c;
+  --color-mist: #fce9f1;
+  --color-foam: #fff6fa;
+  --color-leaf: #e8437a;
+  --color-spark: #ffc89a;
+  --color-lime: #ff9ec0;
+  --color-coral: #c44b6a;
+  --color-slate: #6b4456;
+  --color-muted: #9a7384;
 }
 
 @layer base {
@@ -36,10 +36,10 @@
     font-family: var(--font-sans);
     color: var(--color-ink);
     background:
-      radial-gradient(ellipse 80% 50% at 10% -10%, rgba(197, 224, 99, 0.35), transparent 55%),
-      radial-gradient(ellipse 70% 45% at 100% 0%, rgba(244, 211, 94, 0.28), transparent 50%),
-      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(47, 158, 140, 0.18), transparent 55%),
-      linear-gradient(165deg, var(--color-foam) 0%, var(--color-mist) 45%, #dceee8 100%);
+      radial-gradient(ellipse 80% 50% at 10% -10%, rgba(255, 158, 192, 0.4), transparent 55%),
+      radial-gradient(ellipse 70% 45% at 100% 0%, rgba(255, 196, 214, 0.45), transparent 50%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(232, 67, 122, 0.16), transparent 55%),
+      linear-gradient(165deg, var(--color-foam) 0%, var(--color-mist) 45%, #f7d5e4 100%);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
   }
