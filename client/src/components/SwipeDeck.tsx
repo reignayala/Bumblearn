@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { GraduationCap, RotateCcw, Sparkles, ThumbsDown, ThumbsUp } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { MOCK_DECK } from "../data/mockProfiles";
 import { createMatch } from "../lib/api";
@@ -39,10 +39,10 @@ function mockIsMutualMatch(profile: DeckProfile): boolean {
   return hash % 2 === 0;
 }
 
-export function SwipeDeck() {
+export function SwipeDeck({ deck: sourceDeck = MOCK_DECK }: { deck?: DeckProfile[] }) {
   const navigate = useNavigate();
   const [filters, setFilters] = useState<DeckFilters>(DEFAULT_FILTERS);
-  const [deckIds, setDeckIds] = useState(() => MOCK_DECK.map((p) => p.id));
+  const [deckIds, setDeckIds] = useState(() => sourceDeck.map((p) => p.id));
   const [history, setHistory] = useState<
     { id: string; direction: SwipeDirection; matched: boolean }[]
   >([]);
@@ -51,13 +51,23 @@ export function SwipeDeck() {
   const [matchId, setMatchId] = useState<string | null>(null);
   const [exitHint, setExitHint] = useState<"like" | "pass" | null>(null);
 
-  const filtered = useMemo(() => applyFilters(MOCK_DECK, filters), [filters]);
+  useEffect(() => {
+    setDeckIds(sourceDeck.map((p) => p.id));
+    setHistory([]);
+    setMatchProfile(null);
+    setMatchId(null);
+    setDetailId(null);
+  }, [sourceDeck]);
+
+  const filtered = useMemo(() => applyFilters(sourceDeck, filters), [filters, sourceDeck]);
   const deck = useMemo(
     () => filtered.filter((p) => deckIds.includes(p.id)),
     [filtered, deckIds],
   );
   const visible = deck.slice(0, 3);
-  const detailProfile = detailId ? (MOCK_DECK.find((p) => p.id === detailId) ?? null) : null;
+  const detailProfile = detailId
+    ? (sourceDeck.find((p) => p.id === detailId) ?? null)
+    : null;
 
   const commitSwipe = (profile: DeckProfile, direction: SwipeDirection) => {
     const matched = direction === "like" && mockIsMutualMatch(profile);
@@ -95,7 +105,7 @@ export function SwipeDeck() {
   };
 
   const resetDeck = () => {
-    setDeckIds(MOCK_DECK.map((p) => p.id));
+    setDeckIds(sourceDeck.map((p) => p.id));
     setHistory([]);
     setMatchProfile(null);
     setDetailId(null);

@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { createAuthRouter } from "./auth/routes.js";
 import { createChatRouter } from "./chat/routes.js";
 import { registerChatSockets } from "./chat/socket.js";
 
@@ -34,11 +35,12 @@ app.get("/health", (_req, res) => {
 app.get("/api", (_req, res) => {
   res.json({
     name: "Bumblearn API",
-    version: "0.2.0",
-    status: "chat-enabled",
+    version: "0.3.0",
+    status: "auth-chat-enabled",
   });
 });
 
+app.use("/api", createAuthRouter());
 app.use("/api", createChatRouter());
 registerChatSockets(io);
 
