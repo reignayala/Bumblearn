@@ -90,11 +90,13 @@ export function SwipeDeck() {
   };
 
   return (
-    <div className="flex h-full flex-col gap-3">
-      <FilterBar filters={filters} onChange={setFilters} />
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      <div className="shrink-0">
+        <FilterBar filters={filters} onChange={setFilters} />
+      </div>
 
-      <div className="relative min-h-0 flex-1">
-        <div className="relative mx-auto h-full max-w-md">
+      <div className="relative min-h-[22rem] flex-1">
+        <div className="absolute inset-0 mx-auto max-w-md">
           <AnimatePresence mode="popLayout">
             {visible.length === 0 ? (
               <motion.div
@@ -164,7 +166,7 @@ export function SwipeDeck() {
         </div>
       </div>
 
-      <div className="mx-auto flex w-full max-w-md items-center justify-center gap-4 pb-1">
+      <div className="mx-auto flex w-full max-w-md shrink-0 items-center justify-center gap-4 pb-1">
         <ActionButton
           label="Undo"
           disabled={history.length === 0}
@@ -199,7 +201,7 @@ export function SwipeDeck() {
         </ActionButton>
       </div>
 
-      <p className="text-center text-[11px] text-muted">
+      <p className="shrink-0 text-center text-[11px] text-muted">
         Drag cards or use buttons · tap card for full profile · mock data
       </p>
 

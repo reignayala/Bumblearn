@@ -22,7 +22,7 @@ const PLACEHOLDER_MATCHES = [
 
 export function MatchesPage() {
   return (
-    <section>
+    <section className="min-h-0 flex-1 overflow-y-auto pb-2">
       <h1 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
         Matches
       </h1>

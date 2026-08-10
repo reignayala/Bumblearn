@@ -6,7 +6,7 @@ export function ChatPage() {
   const { matchId } = useParams();
 
   return (
-    <section className="flex min-h-[70vh] flex-col">
+    <section className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="mb-4 flex items-center gap-3">
         <Link
           to="/matches"
