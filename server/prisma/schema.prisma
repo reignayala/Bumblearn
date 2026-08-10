@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  EDUCATOR
+  LEARNER
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum PreferredFormat {
+  ONLINE
+  IN_PERSON
+  EITHER
+}
+
+enum SwipeDirection {
+  LIKE
+  PASS
+}
+
+enum MatchStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum SessionStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id              String    @id @default(cuid())
+  name            String
+  email           String    @unique
+  passwordHash    String?   @map("password_hash")
+  googleId        String?   @unique @map("google_id")
+  roles           UserRole[]
+  bio             String?
+  profilePhotoUrl String?   @map("profile_photo_url")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  educatorProfile EducatorProfile?
+  learnerProfile  LearnerProfile?
+
+  swipesMade   Swipe[]   @relation("SwipesMade")
+  swipesReceived Swipe[] @relation("SwipesReceived")
+
+  matchesAsA Match[] @relation("MatchUserA")
+  matchesAsB Match[] @relation("MatchUserB")
+
+  messages Message[]
+
+  @@map("users")
+}
+
+model EducatorProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique @map("user_id")
+  subjects        String[]
+  hourlyRate      Decimal  @map("hourly_rate") @db.Decimal(10, 2)
+  yearsExperience Int      @default(0) @map("years_experience")
+  teachingStyle   String[] @map("teaching_style")
+  languages       String[]
+  /// Weekly schedule as JSON: { mon: [{start,end}], ... }
+  availability    Json
+  ratingAvg       Float    @default(0) @map("rating_avg")
+  ratingCount     Int      @default(0) @map("rating_count")
+  videoIntroUrl   String?  @map("video_intro_url")
+  pitch           String?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("educator_profiles")
+}
+
+model LearnerProfile {
+  id              String          @id @default(cuid())
+  userId          String          @unique @map("user_id")
+  subjectsWanted  String[]        @map("subjects_wanted")
+  skillLevel      SkillLevel      @default(BEGINNER) @map("skill_level")
+  learningGoals   String?         @map("learning_goals")
+  budgetMin       Decimal?        @map("budget_min") @db.Decimal(10, 2)
+  budgetMax       Decimal?        @map("budget_max") @db.Decimal(10, 2)
+  preferredFormat PreferredFormat @default(EITHER) @map("preferred_format")
+  /// Weekly schedule as JSON: { mon: [{start,end}], ... }
+  availability    Json
+  pitch           String?
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("learner_profiles")
+}
+
+model Swipe {
+  id        String         @id @default(cuid())
+  swiperId  String         @map("swiper_id")
+  swipedId  String         @map("swiped_id")
+  direction SwipeDirection
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  swiper User @relation("SwipesMade", fields: [swiperId], references: [id], onDelete: Cascade)
+  swiped User @relation("SwipesReceived", fields: [swipedId], references: [id], onDelete: Cascade)
+
+  @@unique([swiperId, swipedId])
+  @@index([swipedId])
+  @@map("swipes")
+}
+
+model Match {
+  id        String      @id @default(cuid())
+  userAId   String      @map("user_a_id")
+  userBId   String      @map("user_b_id")
+  matchedAt DateTime    @default(now()) @map("matched_at")
+  status    MatchStatus @default(ACTIVE)
+
+  userA User @relation("MatchUserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB User @relation("MatchUserB", fields: [userBId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+  sessions Session[]
+
+  @@unique([userAId, userBId])
+  @@index([userAId])
+  @@index([userBId])
+  @@map("matches")
+}
+
+model Message {
+  id       String    @id @default(cuid())
+  matchId  String    @map("match_id")
+  senderId String    @map("sender_id")
+  content  String
+  sentAt   DateTime  @default(now()) @map("sent_at")
+  readAt   DateTime? @map("read_at")
+
+  match  Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  sender User  @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([matchId, sentAt])
+  @@map("messages")
+}
+
+model Session {
+  id            String        @id @default(cuid())
+  matchId       String        @map("match_id")
+  scheduledTime DateTime      @map("scheduled_time")
+  durationMins  Int           @default(60) @map("duration_mins")
+  meetingLink   String?       @map("meeting_link")
+  location      String?
+  status        SessionStatus @default(SCHEDULED)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@index([matchId])
+  @@map("sessions")
+}
