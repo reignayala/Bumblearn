@@ -19,7 +19,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
   ].filter(Boolean).length;
 
   return (
-    <div className="relative z-20 space-y-2">
+    <div className="relative z-40 space-y-2">
       <ProgramPicker
         label="Program"
         placeholder="Choose the program you need"

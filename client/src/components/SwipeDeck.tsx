@@ -129,8 +129,8 @@ export function SwipeDeck({ deck: sourceDeck = MOCK_DECK }: { deck?: DeckProfile
         <FilterBar filters={filters} onChange={setFilters} />
       </div>
 
-      <div className="relative min-h-[22rem] flex-1">
-        <div className="absolute inset-0 mx-auto max-w-md">
+      <div className="relative z-0 min-h-[22rem] flex-1">
+        <div className="absolute inset-0 mx-auto max-w-md overflow-hidden">
           <AnimatePresence mode="popLayout">
             {visible.length === 0 ? (
               <motion.div

@@ -50,7 +50,7 @@ export function SwipeCard({
       style={{
         x: isTop ? x : 0,
         rotate: isTop ? rotate : 0,
-        zIndex: 20 - stackIndex,
+        zIndex: 10 - stackIndex,
         scale,
         y: yOffset,
       }}
