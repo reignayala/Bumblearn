@@ -1,22 +1,13 @@
 import { io, type Socket } from "socket.io-client";
 import { getToken, type ApiMessage, type DemoIdentity } from "./api";
-import {
-  appendDemoMessage,
-  createDemoPeerReply,
-  DEMO_USER,
-  getDemoMatch,
-  isDemoMode,
-} from "./demo";
+import { socketOrigin } from "./config";
 
 let socket: Socket | null = null;
 
 export function getSocket() {
-  if (isDemoMode) {
-    return null;
-  }
   const token = getToken();
   if (!socket) {
-    socket = io("/", {
+    socket = io(socketOrigin ?? window.location.origin, {
       path: "/socket.io",
       autoConnect: true,
       transports: ["websocket", "polling"],
@@ -36,7 +27,6 @@ export function resetSocket() {
   }
 }
 
-
 export type MatchUpdatedEvent = {
   matchId: string;
   lastMessage: {
@@ -50,36 +40,7 @@ export function sendChatMessage(
   matchId: string,
   content: string,
 ): Promise<ApiMessage> {
-  if (isDemoMode) {
-    const match = getDemoMatch(matchId);
-    const message: ApiMessage = {
-      id: `demo-msg-${Date.now()}`,
-      matchId,
-      senderId: DEMO_USER.id,
-      senderName: DEMO_USER.name,
-      content,
-      sentAt: new Date().toISOString(),
-    };
-    appendDemoMessage(matchId, message);
-    if (match) {
-      window.setTimeout(() => {
-        appendDemoMessage(
-          matchId,
-          createDemoPeerReply(
-            matchId,
-            match.peerId,
-            match.peerName,
-            "Thanks for reaching out! This is a demo reply on GitHub Pages.",
-          ),
-        );
-      }, 900);
-    }
-    return Promise.resolve(message);
-  }
   const s = getSocket();
-  if (!s) {
-    return Promise.reject(new Error("Chat unavailable"));
-  }
   return new Promise((resolve, reject) => {
     s.emit(
       "chat:send",
@@ -97,7 +58,6 @@ export function sendChatMessage(
 
 export function onChatReady(handler: (me: DemoIdentity) => void) {
   const s = getSocket();
-  if (!s) return () => {};
   const listener = (payload: { me: DemoIdentity }) => handler(payload.me);
   s.on("chat:ready", listener);
   return () => {
@@ -107,7 +67,6 @@ export function onChatReady(handler: (me: DemoIdentity) => void) {
 
 export function onChatMessage(handler: (message: ApiMessage) => void) {
   const s = getSocket();
-  if (!s) return () => {};
   s.on("chat:message", handler);
   return () => {
     s.off("chat:message", handler);
@@ -116,7 +75,6 @@ export function onChatMessage(handler: (message: ApiMessage) => void) {
 
 export function onMatchUpdated(handler: (event: MatchUpdatedEvent) => void) {
   const s = getSocket();
-  if (!s) return () => {};
   s.on("chat:match_updated", handler);
   return () => {
     s.off("chat:match_updated", handler);

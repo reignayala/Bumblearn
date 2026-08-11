@@ -3,37 +3,39 @@
 **Find your perfect learning match.**  
 Swipe through educators and learners — built for Philippine college programs.
 
-## Live demo (GitHub Pages)
+## Live app (GitHub Pages)
 
 **https://reignayala.github.io/Bumblearn/**
 
-Open the link, swipe educators, and try matches — runs in your browser as a demo (no server setup).
-
-For signup, chat persistence, and Postgres, run locally (below) or deploy the full stack with Docker/Render.
+The frontend is hosted on GitHub Pages. Signup, login, chat, and saved data use the **Render API** backend (Postgres + Socket.io).
 
 ## Stack
 
 | Layer | Tech |
 | --- | --- |
-| Frontend | React + TypeScript + Vite + Tailwind |
-| Backend | Node.js + Express + Socket.io |
+| Frontend | React + TypeScript + Vite + Tailwind (GitHub Pages) |
+| Backend | Node.js + Express + Socket.io (Render) |
 | Database | PostgreSQL + Prisma |
 | Auth | Email/password + JWT |
 
-## Monorepo layout
+## Deploy the API (one-time)
 
-```
-client/   # Vite React app (deployed to GitHub Pages)
-server/   # Express API + Prisma + Socket.io
-```
+GitHub Pages only serves static files — the API must run on Render:
 
-## Getting started (local full stack)
+1. Open **https://render.com/deploy?repo=https://github.com/reignayala/Bumblearn**
+2. Sign in with GitHub and create the free `bumblearn-api` service + Postgres
+3. Copy your service URL (e.g. `https://bumblearn-api-xxxx.onrender.com`)
+4. In this repo go to **Settings → Secrets and variables → Actions → Variables**
+5. Add `BUMBLEARN_API_URL` = your Render URL (no trailing slash)
+6. Re-run the **Deploy GitHub Pages** workflow (or push to `main`)
+
+## Local development
 
 ```bash
 npm install
 cp .env.example server/.env
 
-docker compose up -d          # or local Postgres matching DATABASE_URL
+docker compose up -d
 npm run db:generate
 npm run db:push
 
@@ -45,5 +47,5 @@ Open **http://localhost:5173/welcome** → sign up → choose Learn / Educate / 
 
 ## Share
 
-- **Live demo:** https://reignayala.github.io/Bumblearn/
+- **Live app:** https://reignayala.github.io/Bumblearn/
 - **Code:** https://github.com/reignayala/Bumblearn
