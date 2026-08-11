@@ -63,7 +63,14 @@ export function SignupPage() {
       await signup({ name, email, password, roleChoice });
       navigate("/onboarding", { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signup failed");
+      const message = err instanceof Error ? err.message : "Signup failed";
+      if (message.includes("405")) {
+        setError(
+          "The live API is not connected yet. Deploy the Render backend and set BUMBLEARN_API_URL in repo settings.",
+        );
+      } else {
+        setError(message);
+      }
     } finally {
       setSubmitting(false);
     }
