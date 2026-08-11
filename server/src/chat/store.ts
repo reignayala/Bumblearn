@@ -565,50 +565,6 @@ export async function ensureSeedEducators() {
   }
 }
 
-async function ensureStarterMatches(userId: string) {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user?.roles.includes(UserRole.LEARNER)) return;
-
-  const existing = await prisma.match.count({
-    where: { OR: [{ userAId: userId }, { userBId: userId }] },
-  });
-  if (existing > 0) return;
-
-  for (const peerId of ["edu-1", "edu-3"]) {
-    const [userAId, userBId] = pairIds(userId, peerId);
-    const match = await prisma.match.upsert({
-      where: { userAId_userBId: { userAId, userBId } },
-      create: {
-        id: peerId === "edu-1" ? `m1_${userId.slice(-6)}` : `m2_${userId.slice(-6)}`,
-        userAId,
-        userBId,
-      },
-      update: {},
-    });
-
-    const count = await prisma.message.count({ where: { matchId: match.id } });
-    if (count === 0) {
-      if (peerId === "edu-1") {
-        await prisma.message.create({
-          data: {
-            matchId: match.id,
-            senderId: "edu-1",
-            content: "Happy to review Accountancy topics this week!",
-          },
-        });
-      } else {
-        await prisma.message.create({
-          data: {
-            matchId: match.id,
-            senderId: "edu-3",
-            content: "Want to practice presentation skills tomorrow morning?",
-          },
-        });
-      }
-    }
-  }
-}
-
 function mapMatch(
   match: {
     id: string;
@@ -674,7 +630,6 @@ const matchInclude = {
 
 export async function listMatches(viewerId: string): Promise<ChatMatch[]> {
   await ensureSeedEducators();
-  await ensureStarterMatches(viewerId);
 
   const rows = await prisma.match.findMany({
     where: {
