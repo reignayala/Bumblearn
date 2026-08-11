@@ -7,7 +7,7 @@ Swipe through educators and learners — built for Philippine college programs.
 
 **https://reignayala.github.io/Bumblearn/**
 
-The frontend is hosted on GitHub Pages. Signup, login, chat, and saved data use the **Render API** backend (Postgres + Socket.io).
+The frontend is hosted on GitHub Pages. Signup, login, chat, and saved data use the **Render API** at `https://bumblearn-api.onrender.com`.
 
 ## Stack
 
