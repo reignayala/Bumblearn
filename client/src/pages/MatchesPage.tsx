@@ -2,7 +2,6 @@ import { GraduationCap, MessageCircle, WifiOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchMatches, type ApiMatch } from "../lib/api";
-import { isDemoMode } from "../lib/demo";
 import { getSocket, onMatchUpdated } from "../lib/socket";
 
 function relativeTime(iso: string) {
@@ -37,12 +36,6 @@ export function MatchesPage() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
-
-    if (isDemoMode) {
-      return () => {
-        cancelled = true;
-      };
-    }
 
     getSocket();
     const unsubscribe = onMatchUpdated((event) => {

@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: bumblearn-api
+    runtime: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SERVE_CLIENT
+        value: "false"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://reignayala.github.io
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bumblearn-db
+          property: connectionString
+
+databases:
+  - name: bumblearn-db
+    plan: free
+    databaseName: bumblearn
+    user: bumblearn

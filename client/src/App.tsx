@@ -1,6 +1,5 @@
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AppShell } from "./layouts/AppShell";
-import { isDemoMode } from "./lib/demo";
 import { useAuth } from "./lib/auth";
 import { ChatPage } from "./pages/ChatPage";
 import { DiscoverPage } from "./pages/DiscoverPage";
@@ -68,7 +67,7 @@ export default function App() {
           </Route>
         </Route>
 
-        <Route path="*" element={<Navigate to={isDemoMode ? "/" : "/welcome"} replace />} />
+        <Route path="*" element={<Navigate to="/welcome" replace />} />
       </Routes>
     </BrowserRouter>
   );

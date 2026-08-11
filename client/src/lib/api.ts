@@ -1,13 +1,6 @@
 export type RoleChoice = "learner" | "educator" | "both";
 
-import {
-  DEMO_USER,
-  getDemoMatch,
-  isDemoMode,
-  loadDemoMatches,
-  loadDemoMessages,
-  saveDemoMatch,
-} from "./demo";
+import { apiUrl } from "./config";
 
 export type AuthUser = {
   id: string;
@@ -82,7 +75,7 @@ export function setToken(token: string | null) {
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getToken();
-  const res = await fetch(path, {
+  const res = await fetch(apiUrl(path), {
     ...init,
     headers: {
       "Content-Type": "application/json",
@@ -117,9 +110,6 @@ export function login(input: { email: string; password: string }) {
 }
 
 export function fetchMe() {
-  if (isDemoMode) {
-    return Promise.resolve({ user: DEMO_USER });
-  }
   return request<{ user: AuthUser }>("/api/auth/me");
 }
 
@@ -146,24 +136,10 @@ export function updateRoles(roleChoice: RoleChoice) {
 }
 
 export function fetchMatches() {
-  if (isDemoMode) {
-    return Promise.resolve({ matches: loadDemoMatches() });
-  }
   return request<{ matches: ApiMatch[] }>("/api/matches");
 }
 
 export function fetchMatchThread(matchId: string) {
-  if (isDemoMode) {
-    const match = getDemoMatch(matchId);
-    if (!match) {
-      return Promise.reject(new Error("Match not found"));
-    }
-    return Promise.resolve({
-      match,
-      messages: loadDemoMessages(matchId),
-      me: { userId: DEMO_USER.id, name: DEMO_USER.name },
-    });
-  }
   return request<{ match: ApiMatch; messages: ApiMessage[]; me: DemoIdentity }>(
     `/api/matches/${matchId}`,
   );
@@ -176,21 +152,6 @@ export function createMatch(input: {
   subjects?: string[];
   id?: string;
 }) {
-  if (isDemoMode) {
-    const match: ApiMatch = {
-      id: input.id ?? `demo-${input.peerId}-${Date.now()}`,
-      peerId: input.peerId,
-      peerName: input.peerName,
-      peerRole: input.peerRole ?? "educator",
-      subjects: input.subjects ?? [],
-      photoInitial: input.peerName.trim().charAt(0).toUpperCase(),
-      createdAt: new Date().toISOString(),
-      lastMessage: null,
-      messageCount: 0,
-    };
-    saveDemoMatch(match);
-    return Promise.resolve({ match });
-  }
   return request<{ match: ApiMatch }>("/api/matches", {
     method: "POST",
     body: JSON.stringify(input),

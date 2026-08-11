@@ -33,7 +33,8 @@ jobs:
       - name: Build client for GitHub Pages
         run: npm run build --workspace=client
         env:
-          VITE_GITHUB_PAGES: "true"
+          VITE_BASE_PATH: /Bumblearn/
+          VITE_API_URL: ${{ vars.BUMBLEARN_API_URL }}
 
       - name: Publish build to repo root for Pages
         run: |
