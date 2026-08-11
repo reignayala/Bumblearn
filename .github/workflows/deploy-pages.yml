@@ -34,7 +34,8 @@ jobs:
         run: npm run build --workspace=client
         env:
           VITE_BASE_PATH: /Bumblearn/
-          VITE_API_URL: ${{ vars.BUMBLEARN_API_URL }}
+          # Set BUMBLEARN_API_URL in repo variables (Render deploy URL). Fallback keeps signup working.
+          VITE_API_URL: ${{ vars.BUMBLEARN_API_URL || 'https://summit-tool-capture-apps.trycloudflare.com' }}
 
       - name: Publish build to repo root for Pages
         run: |
